@@ -1,10 +1,10 @@
 #!/bin/bash
 # Rebuild from master branch and restart pixelplanet
-
+#
+# To set up a server to use this, you have to go through the building steps manually first.
+#
 #folder for building the canvas (the git repository will get checkout there and the canvas will get buil thtere)
 BUILDDIR="/home/pixelpla/pixelplanet-build"
-#folder for dev canvas
-DEVFOLDER="/home/pixelpla/pixelplanet-dev"
 #folder for shards
 SCBFOLDER="/home/pixelpla/pixelplanet-scb"
 SCCFOLDER="/home/pixelpla/pixelplanet-scc"

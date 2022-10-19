@@ -1,5 +1,4 @@
 /**
- * Created by HF
  *
  * This is the database of the data for registered Users
  *
@@ -9,6 +8,9 @@ import Sequelize, { DataTypes, QueryTypes } from 'sequelize';
 
 import sequelize from './sequelize';
 import { generateHash } from '../../utils/hash';
+import { USERLVL } from '../../core/constants';
+
+export { USERLVL } from '../../core/constants';
 
 
 const RegUser = sequelize.define('User', {
@@ -21,6 +23,7 @@ const RegUser = sequelize.define('User', {
   email: {
     type: DataTypes.CHAR(40),
     allowNull: true,
+    unique: true,
   },
 
   name: {
@@ -38,22 +41,28 @@ const RegUser = sequelize.define('User', {
     defaultValue: false,
   },
 
-  // null if external oauth authentication
+  // null if only ever used external oauth
   password: {
     type: DataTypes.CHAR(60),
     allowNull: true,
   },
 
-  // currently just moderator
+  userlvl: {
+    type: DataTypes.TINYINT,
+    allowNull: false,
+    defaultValue: USERLVL.REGISTERED,
+  },
+
+  // currently just moderator TODO Delete
   roles: {
     type: DataTypes.TINYINT,
     allowNull: false,
     defaultValue: 0,
   },
 
-  // mail and Minecraft verified
+  // if account is mail verified TODO Delete
   verified: {
-    type: DataTypes.TINYINT,
+    type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
   },
@@ -65,11 +74,13 @@ const RegUser = sequelize.define('User', {
     defaultValue: 0,
   },
 
+  // TODO Delete, replaced by ThreePID table
   discordid: {
     type: DataTypes.CHAR(20),
     allowNull: true,
   },
 
+  // TODO Delete, replaced by ThreePID table
   redditid: {
     type: DataTypes.CHAR(10),
     allowNull: true,
@@ -81,50 +92,20 @@ const RegUser = sequelize.define('User', {
     type: DataTypes.DATE,
     allowNull: true,
   },
-
-  // flag == country code
-  flag: {
-    type: DataTypes.CHAR(2),
-    defaultValue: 'xx',
-    allowNull: false,
-  },
-
-  lastLogIn: {
-    type: DataTypes.DATE,
-    allowNull: true,
-  },
 }, {
   timestamps: true,
   updatedAt: false,
 
   getterMethods: {
-    mailVerified() {
-      return this.verified & 0x01;
-    },
-
     blockDm() {
       return this.blocks & 0x01;
-    },
-
-    isMod() {
-      return this.roles & 0x01;
     },
   },
 
   setterMethods: {
-    mailVerified(num) {
-      const val = (num) ? (this.verified | 0x01) : (this.verified & ~0x01);
-      this.setDataValue('verified', val);
-    },
-
     blockDm(num) {
       const val = (num) ? (this.blocks | 0x01) : (this.blocks & ~0x01);
       this.setDataValue('blocks', val);
-    },
-
-    isMod(num) {
-      const val = (num) ? (this.roles | 0x01) : (this.roles & ~0x01);
-      this.setDataValue('roles', val);
     },
 
     password(value) {
@@ -192,10 +173,11 @@ export async function getNamesToIds(ids) {
 }
 
 /*
- * take array of {id: useId, ...} object and resolve
- * user information
+ * take array of objects that include user ids and add
+ * user informations if user is not private
+ * @param rawRanks array of {id: userId, ...} objects
  */
-export async function populateRanking(rawRanks) {
+export async function populateIdObj(rawRanks) {
   if (!rawRanks.length) {
     return rawRanks;
   }
@@ -219,15 +201,14 @@ export async function populateRanking(rawRanks) {
     },
     raw: true,
   });
-  for (let i = 0; i < userData.length; i += 1) {
-    const { id, name, age } = userData[i];
+  for (const { id, name, age } of userData) {
     const dat = rawRanks.find((r) => r.id === id);
     if (dat) {
       dat.name = name;
       dat.age = age;
     }
   }
-  return rawRanks.filter((r) => r.name);
+  return rawRanks;
 }
 
 export default RegUser;

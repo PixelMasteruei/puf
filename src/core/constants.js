@@ -9,6 +9,9 @@ export const MAX_SCALE = 40; // 52 in log2
 // export const DEFAULT_SCALE = 0.25; //-20 in log2
 export const DEFAULT_SCALE = 3;
 
+// background color behind 2D canvses
+export const BACKGROUND_CLR_HEX = '#C4C4C4';
+
 // default canvas that is first assumed, before real canvas data
 // gets fetched via api/me
 export const DEFAULT_CANVAS_ID = '0';
@@ -101,3 +104,19 @@ export const APISOCKET_USER_NAME = 'apisocket';
 export const MAX_LOADED_CHUNKS = 2000;
 export const MAX_CHUNK_AGE = 300000;
 export const GC_INTERVAL = 300000;
+
+export const USERLVL = {
+  ANONYM: 0,
+  REGISTERED: 10,
+  VERIFIED: 20,
+  MOD: 100,
+  ADMIN: 200,
+};
+
+export const THREEP = {
+  DISCORD: 1,
+  REDDIT: 2,
+  FACEBOOK: 3,
+  GOOGLE: 4,
+  VK: 5,
+};

@@ -41,7 +41,7 @@ function generatePopUpPage(req) {
   const ssvR = {
     ...ssv,
     shard: (host.startsWith(`${socketEvents.thisShard}.`))
-      ? null : socketEvents.getLowestActiveShard(),
+      ? null : socketEvents.lowestActiveShard,
     lang: lang === 'default' ? 'en' : lang,
   };
   const script = (assets[`popup-${lang}`])

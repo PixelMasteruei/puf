@@ -2,9 +2,7 @@ import express from 'express';
 
 import session from '../../core/session';
 import passport from '../../core/passport';
-import logger from '../../core/logger';
 import User from '../../data/User';
-import { getIPFromRequest } from '../../utils/ip';
 
 import me from './me';
 import auth from './auth';
@@ -35,7 +33,6 @@ router.use(express.json());
 
 // eslint-disable-next-line no-unused-vars
 router.use((err, req, res, next) => {
-  logger.warn(`Got invalid json from ${req.trueIp} on ${req.originalUrl}`);
   res.status(400).json({
     errors: [{ msg: 'Invalid Request' }],
   });
@@ -54,8 +51,7 @@ router.use(session);
 /*
  * at this point we could use the session id to get
  * stuff without having to verify the whole user,
- * which would avoid SQL requests and it got used previously
- * when we set pixels via api/pixel (new removed)
+ * which would avoid SQL requests
 */
 
 /*
@@ -69,21 +65,40 @@ router.use(passport.session());
 
 /*
  * modtools
- * (does not json bodies, but urlencoded)
+ * (does not take urlencoded bodies)
  */
 router.use('/modtools', modtools);
 
 /*
- * create dummy user with just ip if not
- * logged in
+ * create unregistered user by request if
+ * not logged in
  */
 router.use(async (req, res, next) => {
   if (!req.user) {
-    req.user = new User();
-    await req.user.initialize(null, getIPFromRequest(req));
+    req.user = new User(req);
   }
   next();
 });
+
+router.get('/chathistory', chatHistory);
+
+router.get('/me', me);
+
+router.use('/auth', auth);
+
+router.post('/banme', banme);
+
+router.use((req, res, next) => {
+  if (!req.user.isRegistered) {
+    next(new Error('You are not logged in'));
+    return;
+  }
+  next();
+});
+
+/*
+ * require registered user after this point
+ */
 
 router.post('/startdm', startDm);
 
@@ -95,13 +110,9 @@ router.post('/blockdm', blockdm);
 
 router.post('/privatize', privatize);
 
-router.get('/chathistory', chatHistory);
-
-router.get('/me', me);
-
-router.post('/banme', banme);
-
-router.use('/auth', auth);
+/*
+ * error handling
+ */
 
 // eslint-disable-next-line no-unused-vars
 router.use((err, req, res, next) => {
