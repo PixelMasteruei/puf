@@ -52,6 +52,9 @@ persistStore(store, {}, () => {
   store.dispatch(fetchMe());
 
   socketClient.initialize(store, pixelTransferController, getRenderer);
+
+  // for debugging
+  window.ppStore = store;
 });
 
 (function load() {
