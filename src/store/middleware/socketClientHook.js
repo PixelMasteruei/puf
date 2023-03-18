@@ -17,7 +17,9 @@ export default (store) => (next) => (action) => {
     }
 
     case 'REMOVE_CHUNKS': {
+      console.log('do');
       const { chunks } = action;
+      console.log('deregister', chunks.filter((chunk) => chunk.recUpdates).map((chunk) => [chunk.i, chunk.j]));
       const ids = chunks
         .filter((chunk) => chunk.recUpdates)
         .map((chunk) => chunk.id);

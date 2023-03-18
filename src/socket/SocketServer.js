@@ -637,6 +637,7 @@ class SocketServer {
   }
 
   deleteChunk(chunkid, ws) {
+    console.log('delete chunk', (chunkid >> 8) & 0x00FF, chunkid & 0x00FF, 'for', ws.user.ip);
     ws.chunkCnt -= 1;
     if (!this.CHUNK_CLIENTS.has(chunkid)) return;
     const clients = this.CHUNK_CLIENTS.get(chunkid);
@@ -646,6 +647,7 @@ class SocketServer {
 
   deleteAllChunks(ws) {
     if (!ws.chunkCnt) return;
+    console.logger('delete all chunks for', ws.user.ip);
     // eslint-disable-next-line
     for (const client of this.CHUNK_CLIENTS.values()) {
       const pos = client.indexOf(ws);

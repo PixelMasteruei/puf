@@ -99,5 +99,5 @@ export const APISOCKET_USER_NAME = 'apisocket';
 
 // maximum chunks to subscribe to
 export const MAX_LOADED_CHUNKS = 2000;
-export const MAX_CHUNK_AGE = 300000;
-export const GC_INTERVAL = 300000;
+export const MAX_CHUNK_AGE = 20000;
+export const GC_INTERVAL = 20000;

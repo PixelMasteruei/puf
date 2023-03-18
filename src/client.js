@@ -55,6 +55,7 @@ persistStore(store, {}, () => {
 
   // for debugging
   window.ppStore = store;
+  window.ppRender = getRenderer;
 });
 
 (function load() {

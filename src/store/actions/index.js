@@ -219,6 +219,7 @@ export function requestBigChunk(center) {
 }
 
 export function removeChunks(chunks) {
+  console.log('remove chunks');
   return {
     type: 'REMOVE_CHUNKS',
     chunks,
